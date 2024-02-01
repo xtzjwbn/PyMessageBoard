@@ -37,7 +37,7 @@ class UserSystem:
 		else:
 			return False
 
-	def logOut(self):
+	def logOff(self):
 		self._current_user = None
 
 	@property

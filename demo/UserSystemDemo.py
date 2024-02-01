@@ -1,9 +1,11 @@
 from src.UserSystem import UserSystem
 from src.MessageBoard import MessageBoard
+from src.LikeSystem import LikeSystem
 
 if __name__ == '__main__':
 	UserSystem = UserSystem()
 	MessageBoard = MessageBoard()
+	LikeSystem = LikeSystem()
 	while True:
 		command = input("Enter command: ").split(" ")
 
@@ -15,12 +17,12 @@ if __name__ == '__main__':
 					print("Login successfully")
 				else:
 					print("Login failed")
-		elif command[0] == "logout":
+		elif command[0] == "logoff":
 			if len(command) != 1:
 				print("Invalid command")
 			else:
-				UserSystem.logOut()
-				print("Logout successfully")
+				UserSystem.logOff()
+				print("logoff successfully")
 		elif command[0] == "logon":
 			if len(command) != 4:
 				print("Invalid command")
@@ -65,6 +67,33 @@ if __name__ == '__main__':
 						print("Message deleted successfully")
 					else:
 						print("Message deleted failed")
+
+		elif command[0] == "like_msg":
+			if len(command) != 2:
+				print("Invalid command")
+			else:
+				if UserSystem.current_user is None:
+					print("Please login first")
+				else:
+					if LikeSystem.likeMessage(command[1], UserSystem.current_user):
+						print("Message liked successfully")
+					else:
+						print("Message liked failed")
+
+		elif command[0] == "unlike_msg":
+			if len(command) != 2:
+				print("Invalid command")
+			else:
+				if UserSystem.current_user is None:
+					print("Please login first")
+				else:
+					if LikeSystem.dislikeMessage(command[1], UserSystem.current_user):
+						print("Message unliked successfully")
+					else:
+						print("Message unliked failed")
+		elif command[0] == "exit":
+			print("EXIT!")
+			break
 
 		else:
 			print("Invalid command")
