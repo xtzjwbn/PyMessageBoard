@@ -1,7 +1,9 @@
 from src.UserSystem import UserSystem
+from src.MessageBoard import MessageBoard
 
 if __name__ == '__main__':
 	UserSystem = UserSystem()
+	MessageBoard = MessageBoard()
 	while True:
 		command = input("Enter command: ").split(" ")
 
@@ -37,8 +39,33 @@ if __name__ == '__main__':
 				print("Invalid command")
 			else:
 				UserSystem.printUserList()
+		elif command[0] == "list":
+			if len(command) != 1:
+				print("Invalid command")
+			else:
+				MessageBoard.printMessageList()
+
+		elif command[0] == "add_msg":
+			if len(command) != 2:
+				print("Invalid command")
+			else:
+				if UserSystem.current_user is None:
+					print("Please login first")
+				else:
+					MessageBoard.addMessage(command[1], UserSystem.current_user)
+					print("Message added successfully")
+		elif command[0] == "del_msg":
+			if len(command) != 2:
+				print("Invalid command")
+			else:
+				if UserSystem.current_user is None:
+					print("Please login first")
+				else:
+					if MessageBoard.removeMessage(command[1], UserSystem.current_user):
+						print("Message deleted successfully")
+					else:
+						print("Message deleted failed")
 
 		else:
 			print("Invalid command")
 
-		# TODO : translate command to function call

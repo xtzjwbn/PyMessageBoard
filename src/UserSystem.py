@@ -11,13 +11,16 @@ class UserSystem:
 		self._cs = self._connect.cursor()
 		self._current_user = None
 
+	def __del__(self):
+		self._connect.close()
+
 	def addUser(self, username, password, nickname):
 		# TODO: check valid
 		user_uuid = self._getUniqueUUID()
 		password = hashlib.md5(password.encode('utf-8')).hexdigest()
-		self._cs.execute('''insert into USER values(?,?,?,?);''', (user_uuid, username, password, nickname))
+		self._cs.execute('''insert into USERS values(?,?,?,?);''', (user_uuid, username, password, nickname))
 		self._connect.commit()
-		user = self._cs.execute('''select * from USER where UUID = ?''', [user_uuid])
+		user = self._cs.execute('''select * from USERS where UUID = ?''', (user_uuid,))
 		user = self._cs.fetchall()
 		return user
 
@@ -26,7 +29,7 @@ class UserSystem:
 			print("There is user " + self._current_user.username + " logged in!")
 			return False
 		password_md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
-		self._cs.execute('''select * from USER where NAME = ? and PASSWORD = ?''', (username, password_md5))
+		self._cs.execute('''select * from USERS where NAME = ? and PASSWORD = ?''', (username, password_md5))
 		result = self._cs.fetchall()
 		if len(result) == 1:
 			self._current_user = User(result[0])
@@ -53,7 +56,7 @@ class UserSystem:
 
 	def printUserList(self):
 		print("User List:")
-		self._cs.execute('''select * from USER''')
+		self._cs.execute('''select * from USERS''')
 		user_list = self._cs.fetchall()
 		for index, user in enumerate(user_list):
 			print("---------------------------------------")
@@ -64,7 +67,7 @@ class UserSystem:
 			# print("---------------------------------------")
 
 	def _getUniqueUUID(self):
-		current_uuid_result = self._cs.execute('''select UUID from USER''').fetchall()
+		current_uuid_result = self._cs.execute('''select UUID from USERS''').fetchall()
 		while True:
 			user_uuid = uuid.uuid1().hex
 			flag = False
