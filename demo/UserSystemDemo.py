@@ -1,14 +1,16 @@
 from src.UserSystem import UserSystem
-from src.MessageBoard import MessageBoard
+from src.BoardSystem import BoardSystem
 from src.LikeSystem import LikeSystem
 
 if __name__ == '__main__':
 	UserSystem = UserSystem()
-	MessageBoard = MessageBoard()
+	BoardSystem = BoardSystem(3)
 	LikeSystem = LikeSystem()
 	while True:
-		command = input("Enter command: ").split(" ")
+		input_command = input("Enter command: ")
+		command = input_command.split(" ")
 
+		# UserSystem
 		if command[0] == "login":
 			if len(command) != 3:
 				print("Invalid command")
@@ -41,21 +43,24 @@ if __name__ == '__main__':
 				print("Invalid command")
 			else:
 				UserSystem.printUserList()
-		elif command[0] == "list":
-			if len(command) != 1:
-				print("Invalid command")
-			else:
-				MessageBoard.printMessageList()
 
-		elif command[0] == "add_msg":
-			if len(command) != 2:
-				print("Invalid command")
+
+		# BoardSystem
+		elif command[0] == "list":
+			if len(command) == 1:
+				BoardSystem.printMessageList()
 			else:
-				if UserSystem.current_user is None:
-					print("Please login first")
+				if len(command) != 2:
+					print("Invalid command")
 				else:
-					MessageBoard.addMessage(command[1], UserSystem.current_user)
-					print("Message added successfully")
+					BoardSystem.printNthMessageList(int(command[1]))
+		elif command[0] == "add_msg":
+			if UserSystem.current_user is None:
+				print("Please login first")
+			else:
+				msg = input_command[len(command[0])+1:]
+				BoardSystem.addMessage(msg, UserSystem.current_user)
+				print("Message added successfully")
 		elif command[0] == "del_msg":
 			if len(command) != 2:
 				print("Invalid command")
@@ -63,11 +68,14 @@ if __name__ == '__main__':
 				if UserSystem.current_user is None:
 					print("Please login first")
 				else:
-					if MessageBoard.removeMessage(command[1], UserSystem.current_user):
+					# if BoardSystem.removeMessageByIndex(int(command[1]), UserSystem.current_user):
+					if BoardSystem.removeMessageByUUID(command[1], UserSystem.current_user):
 						print("Message deleted successfully")
 					else:
 						print("Message deleted failed")
 
+
+		# LikeSystem
 		elif command[0] == "like_msg":
 			if len(command) != 2:
 				print("Invalid command")
@@ -75,6 +83,7 @@ if __name__ == '__main__':
 				if UserSystem.current_user is None:
 					print("Please login first")
 				else:
+					# if LikeSystem.likeMessage(BoardSystem.indexToUUID(int(command[1])), UserSystem.current_user):
 					if LikeSystem.likeMessage(command[1], UserSystem.current_user):
 						print("Message liked successfully")
 					else:
@@ -87,6 +96,7 @@ if __name__ == '__main__':
 				if UserSystem.current_user is None:
 					print("Please login first")
 				else:
+					# if LikeSystem.dislikeMessage(BoardSystem.indexToUUID(int(command[1])), UserSystem.current_user):
 					if LikeSystem.dislikeMessage(command[1], UserSystem.current_user):
 						print("Message unliked successfully")
 					else:
@@ -97,4 +107,3 @@ if __name__ == '__main__':
 
 		else:
 			print("Invalid command")
-

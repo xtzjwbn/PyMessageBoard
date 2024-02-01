@@ -1,6 +1,3 @@
-from src.User import User
-
-
 class Message:
     def __init__(self, msg, user):
         # TODO: id

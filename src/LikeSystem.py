@@ -1,5 +1,5 @@
 import sqlite3
-import uuid
+import src.FuncLib as FuncLib
 
 class LikeSystem:
     def __init__(self, sqlite_path="../DataBase/MessageBoardDB.sqlite"):
@@ -10,15 +10,13 @@ class LikeSystem:
         self._connect.close()
 
     def likeMessage(self, message_uuid, user):
-
-        like_uuid = self._getUniqueUUID()
+        like_uuid = FuncLib.getUniqueUUID(self._cs, "LIKES")
 
         self._cs.execute(
             '''
             select * from LIKES
             where MESSAGE_UUID = ? and USER_UUID = ?
-        '''
-        , (message_uuid, user.uuid))
+        ''', (message_uuid, user.uuid))
         result = self._cs.fetchall()
 
         if len(result) != 0:
@@ -28,8 +26,7 @@ class LikeSystem:
         self._cs.execute(
             '''
             insert into LIKES values(?,?,?);
-            '''
-            , (like_uuid, message_uuid, user.uuid))
+            ''', (like_uuid, message_uuid, user.uuid))
         self._connect.commit()
         self._cs.execute(
             '''
@@ -43,8 +40,7 @@ class LikeSystem:
         self._cs.execute('''
             select * from LIKES
             where MESSAGE_UUID = ? and USER_UUID = ?
-        '''
-        , (message_uuid, user.uuid))
+        ''', (message_uuid, user.uuid))
         result = self._cs.fetchall()
 
         if len(result) == 0:
@@ -65,15 +61,3 @@ class LikeSystem:
         self._connect.commit()
 
         return True
-
-    def _getUniqueUUID(self):
-        current_uuid_result = self._cs.execute('''select UUID from LIKES''').fetchall()
-        while True:
-            like_uuid = uuid.uuid1().hex
-            flag = False
-            for current_uuid in current_uuid_result:
-                if like_uuid == current_uuid[0]:
-                    flag = True
-                    break
-            if not flag:
-                return like_uuid
