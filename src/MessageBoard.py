@@ -1,6 +1,116 @@
+from src.UserSystem import UserSystem
+from src.BoardSystem import BoardSystem
+from src.LikeSystem import LikeSystem
+
 class MessageBoard:
-    def __init__(self, max_list_showing=10):
+    def __init__(self, database_path="./DataBase/MessageBoardDB.sqlite", max_list_showing=10):
         self._max_list_showing = max_list_showing
+        self._UserSystem = UserSystem(database_path)
+        self._BoardSystem = BoardSystem(database_path)
+        self._LikeSystem = LikeSystem(database_path)
+
+
+    def InputLine(self, line_str):
+        command = line_str.split(" ")
+
+        # UserSystem
+        if command[0] == "login":
+            if len(command) != 3:
+                print("Invalid command")
+            else:
+                if self._UserSystem.logIn(command[1], command[2]):
+                    print("Login successfully")
+                else:
+                    print("Login failed")
+        elif command[0] == "logoff":
+            if len(command) != 1:
+                print("Invalid command")
+            else:
+                self._UserSystem.logOff()
+                print("logoff successfully")
+        elif command[0] == "logon":
+            if len(command) != 4:
+                print("Invalid command")
+            else:
+                if self._UserSystem.addUser(command[1], command[2], command[3]):
+                    print("Logon successfully")
+                else:
+                    print("Logon failed")
+        # elif command[0] == "printcurrentuser":
+        # 	if len(command) != 1:
+        # 		print("Invalid command")
+        # 	else:
+        # 		self._UserSystem.printCurrentUser()
+        # elif command[0] == "printuserlist":
+        # 	if len(command) != 1:
+        # 		print("Invalid command")
+        # 	else:
+        # 		self._UserSystem.printUserList()
+
+        # BoardSystem
+        elif command[0] == "list":
+            if len(command) == 1:
+                message_list = self._BoardSystem.getMessageList()
+                self.printMessageList(message_list)
+            else:
+                if len(command) != 2:
+                    print("Invalid command")
+                else:
+                    message_list = self._BoardSystem.getMessageList()
+                    self.printNthMessageList(message_list, int(command[1]))
+        elif command[0] == "add_msg":
+            if self._UserSystem.current_user is None:
+                print("Please login first")
+            else:
+                msg = line_str[len(command[0]) + 1:]
+                self._BoardSystem.addMessage(msg, self._UserSystem.current_user)
+                print("Message added successfully")
+        elif command[0] == "del_msg":
+            if len(command) != 2:
+                print("Invalid command")
+            else:
+                if self._UserSystem.current_user is None:
+                    print("Please login first")
+                else:
+                    # if self._BoardSystem.removeMessageByIndex(int(command[1]), self._UserSystem.current_user):
+                    if self._BoardSystem.removeMessageByUUID(command[1], self._UserSystem.current_user):
+                        print("Message deleted successfully")
+                    else:
+                        print("Message deleted failed")
+
+
+        # LikeSystem
+        elif command[0] == "like_msg":
+            if len(command) != 2:
+                print("Invalid command")
+            else:
+                if self._UserSystem.current_user is None:
+                    print("Please login first")
+                else:
+                    # if self._LikeSystem.likeMessage(self._BoardSystem.indexToUUID(int(command[1])), self._UserSystem.current_user):
+                    if self._LikeSystem.likeMessage(command[1], self._UserSystem.current_user):
+                        print("Message liked successfully")
+                    else:
+                        print("Message liked failed")
+
+        elif command[0] == "unlike_msg":
+            if len(command) != 2:
+                print("Invalid command")
+            else:
+                if self._UserSystem.current_user is None:
+                    print("Please login first")
+                else:
+                    # if self._LikeSystem.dislikeMessage(self._BoardSystem.indexToUUID(int(command[1])), self._UserSystem.current_user):
+                    if self._LikeSystem.dislikeMessage(command[1], self._UserSystem.current_user):
+                        print("Message unliked successfully")
+                    else:
+                        print("Message unliked failed")
+        elif command[0] == "exit":
+            print("EXIT!")
+            return
+
+        else:
+            print("Invalid command")
 
     def printNthMessageList(self, message_list, page_n):
         # page_n -= 1

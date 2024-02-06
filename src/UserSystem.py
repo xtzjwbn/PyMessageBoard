@@ -5,7 +5,7 @@ import src.FuncLib as FuncLib
 
 
 class UserSystem:
-    def __init__(self, sqlite_path="../DataBase/MessageBoardDB.sqlite"):
+    def __init__(self, sqlite_path="./DataBase/MessageBoardDB.sqlite"):
         # self._user_list = []
         self._connect = sqlite3.connect(sqlite_path)
         self._cs = self._connect.cursor()

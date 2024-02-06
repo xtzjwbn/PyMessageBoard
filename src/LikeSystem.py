@@ -2,7 +2,7 @@ import sqlite3
 import src.FuncLib as FuncLib
 
 class LikeSystem:
-    def __init__(self, sqlite_path="../DataBase/MessageBoardDB.sqlite"):
+    def __init__(self, sqlite_path="./DataBase/MessageBoardDB.sqlite"):
         self._connect = sqlite3.connect(sqlite_path)
         self._cs = self._connect.cursor()
 
