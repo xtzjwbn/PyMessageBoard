@@ -15,7 +15,14 @@ class UserSystem:
         self._connect.close()
 
     def addUser(self, username, password, nickname):
-        # TODO: check valid
+        unique_username_list = self._cs.execute('''select * from USERS where NAME = ?''', (username,)).fetchall()
+        if len(unique_username_list) != 0:
+            print("Username has been used!")
+            return False
+        unique_nickname_list = self._cs.execute('''select * from USERS where NICKNAME = ?''', (nickname,)).fetchall()
+        if len(unique_nickname_list) != 0:
+            print("Nickname has been used!")
+            return False
         user_uuid = FuncLib.getUniqueUUID(self._cs, "USERS")
         password = hashlib.md5(password.encode('utf-8')).hexdigest()
         self._cs.execute('''insert into USERS values(?,?,?,?);''', (user_uuid, username, password, nickname))
